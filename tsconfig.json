@@ -5,6 +5,7 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "esModuleInterop": true,
+    "noImplicitAny": false,
     "skipLibCheck": true,
     "lib": ["esnext"],
     "types": ["@cloudflare/workers-types", "node", "jest"],

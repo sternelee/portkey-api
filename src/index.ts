@@ -22,6 +22,8 @@ import { hooks } from './middlewares/hooks';
 import { compress } from 'hono/compress';
 import { getRuntimeKey } from 'hono/adapter';
 import { imageGenerationsHandler } from './handlers/imageGenerationsHandler';
+import { authAPI } from './handlers/authHandler';
+import { dataAPI } from './handlers/dataHandler';
 import conf from '../conf.json';
 
 // Create a new Hono server instance
@@ -137,6 +139,9 @@ app.post('/v1/prompts/*', requestValidator, (c) => {
     message: 'prompt completions error: Something went wrong',
   });
 });
+
+app.route('/v1/auth', authAPI);
+app.route('/admin', dataAPI);
 
 /**
  * @deprecated

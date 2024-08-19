@@ -1,9 +1,22 @@
 import { Context } from 'hono';
 import { CONTENT_TYPES, POWERED_BY, VALID_PROVIDERS } from '../../globals';
 import { configSchema } from './schema/config';
+import { Bindings } from '../../bindings';
 
-export const requestValidator = (c: Context, next: any) => {
+export const requestValidator = async (
+  c: Context<{ Bindings: Bindings }>,
+  next: any
+) => {
   const requestHeaders = Object.fromEntries(c.req.raw.headers);
+  const authorization = requestHeaders.authorization?.replace('Bearer ', '');
+  const virtualConfigHeader = (await c.env.KVDATA.get(
+    authorization,
+    'text'
+  )) as string;
+  if (virtualConfigHeader) {
+    requestHeaders[`x-${POWERED_BY}-config`] = virtualConfigHeader;
+    c.header(`x-${POWERED_BY}-config`, virtualConfigHeader);
+  }
 
   const contentType = requestHeaders['content-type'];
   if (
