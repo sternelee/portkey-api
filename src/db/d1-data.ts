@@ -7,7 +7,11 @@ export async function getAllContent(db: D1Database) {
   return results;
 }
 
-export async function getD1DataByTable(db: D1Database, table: string, params: Record<string, any>) {
+export async function getD1DataByTable(
+  db: D1Database,
+  table: string,
+  params: Record<string, any>
+) {
   const sql = generateSelectSql(table, params);
   const { results } = await db.prepare(sql).all();
   return params?.id ? results[0] : results;
@@ -45,7 +49,11 @@ export function generateSelectSql(table: string, params: Record<string, any>) {
   return sql;
 }
 
-export async function getD1ByTableAndId(db: D1Database, table: string, id: string) {
+export async function getD1ByTableAndId(
+  db: D1Database,
+  table: string,
+  id: string
+) {
   const { results } = await db
     .prepare(`SELECT * FROM ${table} where id = '${id}';`)
     .all();
@@ -67,7 +75,11 @@ export function prepareD1Data(data: Record<string, any>, tbl = '') {
   return data;
 }
 
-export async function insertD1Data(d1: D1Database, table: keyof typeof tableSchemas, data: Record<string, any>) {
+export async function insertD1Data(
+  d1: D1Database,
+  table: keyof typeof tableSchemas,
+  data: Record<string, any>
+) {
   const db = drizzle(d1);
   data = prepareD1Data(data, table);
   const schema = getRepoFromTable(table);
@@ -81,7 +93,11 @@ export async function insertD1Data(d1: D1Database, table: keyof typeof tableSche
   }
 }
 
-export async function deleteD1ByTableAndId(d1: D1Database, table: keyof typeof tableSchemas, id: string) {
+export async function deleteD1ByTableAndId(
+  d1: D1Database,
+  table: keyof typeof tableSchemas,
+  id: string
+) {
   console.log('deleteD1ByTableAndId', table, id);
   const db = drizzle(d1);
 

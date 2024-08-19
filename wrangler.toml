@@ -3,6 +3,15 @@ compatibility_date = "2023-01-01"
 main = "src/index.ts"
 node_compat = true
 
+kv_namespaces = [
+  { binding = "KVDATA", id = "xxxxxxxxxxxxxxxx" }
+]
+
+[[d1_databases]]
+binding = "D1DATA"
+database_name = "portkey_api"
+database_id = "xxxxxxxxxxxxxxxx"
+
 [vars]
 ENVIRONMENT = 'dev'
 CUSTOM_HEADERS_TO_IGNORE = []
