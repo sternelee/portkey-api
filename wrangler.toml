@@ -4,13 +4,13 @@ main = "src/index.ts"
 node_compat = true
 
 kv_namespaces = [
-  { binding = "KVDATA", id = "xxxxxxxxxxxxxxxx" }
+  { binding = "KVDATA", id = "e4571236b0e04dd7a3a0ff92a4ba2622" }
 ]
 
 [[d1_databases]]
 binding = "D1DATA"
 database_name = "portkey_api"
-database_id = "xxxxxxxxxxxxxxxx"
+database_id = "634a5928-2a19-4fb9-bcb0-c60129ae4690"
 
 [vars]
 ENVIRONMENT = 'dev'

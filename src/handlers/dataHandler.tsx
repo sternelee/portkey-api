@@ -17,6 +17,7 @@ import {
   getItemReadResult,
   getOperationCreateResult,
 } from '../db/auth-helpers';
+import { Login } from '../components/Login';
 
 const dataAPI = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
@@ -24,6 +25,7 @@ dataAPI.use('*', async (ctx, next) => {
   const path = ctx.req.path;
   if (!path.includes('/admin/login')) {
     const auth = initializeLucia(ctx.env.D1DATA, ctx.env);
+    // @ts-ignore
     const authRequest = auth.handleRequest(ctx);
     let session = await authRequest.validate();
     if (!session) {
@@ -53,6 +55,7 @@ tables.forEach((entry) => {
     const params = qs.parse(query);
 
     if (entry.hooks?.beforeOperation) {
+      // @ts-ignore
       await entry.hooks.beforeOperation(ctx, 'read', params.id, params);
     }
     const accessControlResult = await getApiAccessControlResult(
@@ -94,6 +97,7 @@ tables.forEach((entry) => {
       );
 
       if (entry.hooks?.afterOperation) {
+        // @ts-ignore
         await entry.hooks.afterOperation(ctx, 'read', params.id, null, data);
       }
 
@@ -216,6 +220,7 @@ tables.forEach((entry) => {
           result
         );
       }
+      // @ts-ignore
       return ctx.json(result?.data, 201);
     } catch (error) {
       console.log('error posting content', error);
@@ -337,5 +342,10 @@ tables.forEach((entry) => {
 dataAPI.get('/ping', (ctx) => {
   return ctx.json(`${ctx.req.path} is all good`);
 });
+
+dataAPI.get('/login', async (ctx) => {
+  return ctx.html(<Login messages={[]} />);
+});
+
 
 export { dataAPI };
