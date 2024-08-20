@@ -1,10 +1,11 @@
 import { sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { relations } from 'drizzle-orm';
 import { auditSchema } from './audit';
-import * as providers from './providers';
 import * as configs from './configs';
 import * as userKeys from './userKeys';
 import * as userSessions from './userSessions';
+import * as providers from './providers';
+import * as prompts from './prompts';
 import { isAdmin, isAdminOrEditor, isAdminOrUser } from '../config-helpers';
 import { ApiConfig } from '../index';
 export const tableName = 'users';
@@ -21,7 +22,6 @@ export const definition = {
   password: text('password'),
   role: text('role').$type<'admin' | 'user'>(),
   plan: text('plan').$type<'normal' | 'pro' | 'supper'>(),
-  pans: text('pans', { mode: 'json' }).$type<IPanRecord>(),
 };
 
 export const table = sqliteTable(tableName, {
@@ -30,10 +30,11 @@ export const table = sqliteTable(tableName, {
 });
 
 export const relation = relations(table, ({ many }) => ({
-  configs: many(configs.table),
-  providers: many(providers.table),
   keys: many(userKeys.table),
   sessions: many(userSessions.table),
+  providers: many(providers.table),
+  prompts: many(prompts.table),
+  configs: many(configs.table),
 }));
 
 export const access: ApiConfig['access'] = {
