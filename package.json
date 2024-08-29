@@ -1,6 +1,6 @@
 {
   "name": "@portkey-ai/gateway",
-  "version": "1.6.1",
+  "version": "1.7.1",
   "description": "A fast AI gateway by Portkey",
   "repository": {
     "type": "git",
@@ -35,9 +35,11 @@
     "format": "prettier --write \"./**/*.{js,jsx,ts,tsx,json}\"",
     "format:check": "prettier --check \"./**/*.{js,jsx,ts,tsx,json}\"",
     "generate": "drizzle-kit generate --dialect=sqlite --schema=./src/db/schema --out=./migrations",
-    "up": "wrangler d1 migrations apply portkey_api --local",
-    "up:prod": "wrangler d1 migrations apply portkey_api",
-    "test": "jest"
+    "up": "wrangler d1 migrations apply portkey-ai --local",
+    "up:prod": "wrangler d1 migrations apply portkey-ai",
+    "test": "ts-jest",
+    "pre-push": "npm run build && node start-test.js",
+    "prepare": "husky"
   },
   "dependencies": {
     "@aws-crypto/sha256-js": "^5.2.0",
@@ -57,6 +59,7 @@
     "@rollup/plugin-typescript": "^11.1.5",
     "@types/async-retry": "^1.4.5",
     "@types/jest": "^29.5.12",
+    "husky": "^9.1.4",
     "@types/node": "20.8.3",
     "@types/qs": "^6.9.15",
     "drizzle-kit": "^0.23.2",

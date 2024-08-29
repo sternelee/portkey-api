@@ -9,7 +9,7 @@ kv_namespaces = [
 
 [[d1_databases]]
 binding = "D1DATA"
-database_name = "portkey_api"
+database_name = "portkey-ai"
 database_id = "634a5928-2a19-4fb9-bcb0-c60129ae4690"
 
 [vars]
