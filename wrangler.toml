@@ -1,7 +1,11 @@
-name = "rubeus"
-compatibility_date = "2023-01-01"
+name = "all-ai"
+compatibility_date = "2024-04-04"
 main = "src/index.ts"
 node_compat = true
+
+kv_namespaces = [
+  { binding = "KVDATA", id = "e4571236b0e04dd7a3a0ff92a4ba2622" }
+]
 
 [vars]
 ENVIRONMENT = 'dev'
@@ -11,18 +15,23 @@ CUSTOM_HEADERS_TO_IGNORE = []
 #Configuration for DEVELOPMENT environment
 #
 [env.staging]
-name = "rubeus-dev"
+name = "all-ai-dev"
 
 [env.staging.vars]
 ENVIRONMENT = 'staging'
 CUSTOM_HEADERS_TO_IGNORE = []
+
+[[d1_databases]]
+binding = "D1DATA"
+database_name = "portkey_ai"
+database_id = "634a5928-2a19-4fb9-bcb0-c60129ae4690"
 
 
 #
 #Configuration for PRODUCTION environment
 #
 [env.production]
-name = "rubeus"
+name = "all-ai"
 logpush=true
 
 [env.production.vars]
