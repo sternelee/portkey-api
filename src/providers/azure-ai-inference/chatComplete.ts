@@ -1,4 +1,3 @@
-import { AZURE_AI_INFERENCE } from '../../globals';
 import { OpenAIErrorResponseTransform } from '../openai/utils';
 import {
   ChatCompletionResponse,
@@ -17,6 +16,11 @@ export const AzureAIInferenceChatCompleteConfig: ProviderConfig = {
     default: '',
   },
   max_tokens: {
+    param: 'max_tokens',
+    default: 100,
+    min: 0,
+  },
+  max_completion_tokens: {
     param: 'max_tokens',
     default: 100,
     min: 0,
@@ -74,10 +78,10 @@ export const AzureAIInferenceChatCompleteResponseTransform = (
     responseStatus: number
   ) => ChatCompletionResponse | ErrorResponse = (response, responseStatus) => {
     if (responseStatus !== 200 && 'error' in response) {
-      return OpenAIErrorResponseTransform(response, AZURE_AI_INFERENCE);
+      return OpenAIErrorResponseTransform(response, provider);
     }
 
-    return { ...response, provider: AZURE_AI_INFERENCE };
+    return { ...response, provider: provider };
   };
   return transformer;
 };

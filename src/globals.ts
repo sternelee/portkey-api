@@ -66,6 +66,10 @@ export const VOYAGE: string = 'voyage';
 export const GITHUB: string = 'github';
 export const DEEPBRICKS: string = 'deepbricks';
 export const SILICONFLOW: string = 'siliconflow';
+export const CEREBRAS: string = 'cerebras';
+export const INFERENCENET: string = 'inference-net';
+export const SAMBANOVA: string = 'sambanova';
+export const UPSTAGE: string = 'upstage';
 
 export const VALID_PROVIDERS = [
   ANTHROPIC,
@@ -106,6 +110,10 @@ export const VALID_PROVIDERS = [
   DEEPBRICKS,
   SILICONFLOW,
   HUGGING_FACE,
+  CEREBRAS,
+  INFERENCENET,
+  SAMBANOVA,
+  UPSTAGE,
 ];
 
 export const CONTENT_TYPES = {

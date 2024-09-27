@@ -12,5 +12,6 @@
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
     "resolveJsonModule": true
-  }
+  },
+  "exclude": ["**/*.test.ts"]
 }
