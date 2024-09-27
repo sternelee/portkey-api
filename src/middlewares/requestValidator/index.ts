@@ -2,8 +2,26 @@ import { Context } from 'hono';
 import { CONTENT_TYPES, POWERED_BY, VALID_PROVIDERS } from '../../globals';
 import { configSchema } from './schema/config';
 
-export const requestValidator = (c: Context, next: any) => {
+export const requestValidator = async (c: Context, next: any) => {
   const requestHeaders = Object.fromEntries(c.req.raw.headers);
+  const requestBody = await c.req.json();
+  const model = requestBody.model;
+  const [provider, modelName] = model.split(':');
+  if (modelName) {
+    requestHeaders[`x-${POWERED_BY}-provider`] = provider;
+
+    const originalBody = await c.req.raw.clone().text();
+    const modifiedBody = JSON.parse(originalBody);
+    modifiedBody.model = modelName;
+    const newHeaders = new Headers(requestHeaders);
+    const newRequest = new Request(c.req.raw.url, {
+      method: c.req.raw.method,
+      headers: newHeaders,
+      body: JSON.stringify(modifiedBody),
+    });
+
+    c.req.raw = newRequest;
+  }
 
   const contentType = requestHeaders['content-type'];
   if (
@@ -151,5 +169,5 @@ export const requestValidator = (c: Context, next: any) => {
       );
     }
   }
-  return next();
+  return await next();
 };
