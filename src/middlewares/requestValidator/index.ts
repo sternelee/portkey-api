@@ -4,15 +4,13 @@ import { configSchema } from './schema/config';
 
 export const requestValidator = async (c: Context, next: any) => {
   const requestHeaders = Object.fromEntries(c.req.raw.headers);
-  const requestBody = await c.req.json();
-  const model = requestBody.model;
-  const [provider, modelName] = model.split(':');
-  if (modelName) {
+  const clonedReq = c.req.raw.clone();
+  const originalBody = await clonedReq.text();
+  const modifiedBody = JSON.parse(originalBody);
+  if (modifiedBody.model && modifiedBody.model.includes('#')) {
+    const [provider, modelName] = modifiedBody.model.split('#');
     requestHeaders[`x-${POWERED_BY}-provider`] = provider;
-
-    const originalBody = await c.req.raw.clone().text();
-    const modifiedBody = JSON.parse(originalBody);
-    modifiedBody.model = modelName;
+    modifiedBody.model = modelName || undefined;
     const newHeaders = new Headers(requestHeaders);
     const newRequest = new Request(c.req.raw.url, {
       method: c.req.raw.method,
