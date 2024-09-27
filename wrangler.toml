@@ -4,7 +4,7 @@ main = "src/index.ts"
 node_compat = true
 
 kv_namespaces = [
-  { binding = "KVDATA", id = "e4571236b0e04dd7a3a0ff92a4ba2622" }
+  { binding = "KVDATA", id = "xxxxxxxxxxxxxxxxx" }
 ]
 
 [vars]
@@ -24,7 +24,7 @@ CUSTOM_HEADERS_TO_IGNORE = []
 [[d1_databases]]
 binding = "D1DATA"
 database_name = "portkey_ai"
-database_id = "634a5928-2a19-4fb9-bcb0-c60129ae4690"
+database_id = "xxxxxxxxxxxx"
 
 
 #
