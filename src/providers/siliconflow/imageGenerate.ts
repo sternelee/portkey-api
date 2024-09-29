@@ -36,12 +36,12 @@ interface SiliconFlowImageGenerateResponse extends ImageGenerateResponse {
 }
 
 export const SiliconFlowImageGenerateResponseTransform: (
-  response: SiliconFlowImageGenerateResponse | ErrorResponse,
+  response: SiliconFlowImageGenerateResponse | string,
   responseStatus: number
 ) => ImageGenerateResponse | ErrorResponse = (response, responseStatus) => {
-  if (responseStatus !== 200 && 'error' in response) {
+  if (responseStatus !== 200 && typeof response === 'string') {
     return SiliconFlowErrorResponseTransform(response, SILICONFLOW);
   }
 
-  return response;
+  return response as ImageGenerateResponse;
 };

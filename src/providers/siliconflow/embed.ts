@@ -23,12 +23,12 @@ export const SiliconFlowEmbedConfig: ProviderConfig = {
 interface SiliconFlowEmbedResponse extends EmbedResponse {}
 
 export const SiliconFlowEmbedResponseTransform: (
-  response: SiliconFlowEmbedResponse | ErrorResponse,
+  response: SiliconFlowEmbedResponse | string,
   responseStatus: number
 ) => EmbedResponse | ErrorResponse = (response, responseStatus) => {
-  if (responseStatus !== 200 && 'error' in response) {
+  if (responseStatus !== 200 && typeof response === 'string') {
     return SiliconFlowErrorResponseTransform(response, SILICONFLOW);
   }
 
-  return response;
+  return response as SiliconFlowEmbedResponse;
 };

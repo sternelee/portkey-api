@@ -62,26 +62,29 @@ export const SiliconFlowChatCompleteConfig: ProviderConfig = {
 };
 
 export const SiliconFlowErrorResponseTransform: (
-  response: ErrorResponse,
+  response: string,
   provider: string
 ) => ErrorResponse = (response, provider) => {
   return generateErrorResponse(
     {
-      ...response.error,
+      message: response,
+      type: null,
+      param: null,
+      code: null,
     },
     provider
   );
 };
 
 export const SiliconFlowChatCompleteResponseTransform: (
-  response: ChatCompletionResponse | ErrorResponse,
+  response: ChatCompletionResponse | string,
   responseStatus: number
 ) => ChatCompletionResponse | ErrorResponse = (response, responseStatus) => {
-  if (responseStatus !== 200 && 'error' in response) {
+  if (responseStatus !== 200 && typeof response === 'string') {
     return SiliconFlowErrorResponseTransform(response, SILICONFLOW);
   }
 
-  return response;
+  return response as ChatCompletionResponse;
 };
 
 /**
