@@ -27,7 +27,7 @@ function getProxyPath(
   let reqURL = new URL(requestURL);
   let reqPath = reqURL.pathname;
   const reqQuery = reqURL.search;
-  reqPath = reqPath.replace(proxyEndpointPath, '');
+  // reqPath = reqPath.replace(proxyEndpointPath, '');
 
   if (customHost) {
     return `${customHost}${reqPath}${reqQuery}`;
