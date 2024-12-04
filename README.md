@@ -1,7 +1,7 @@
 <div align="center">
 
 <p align="right">
-   <strong>English</strong> | <a href="./.github/README.cn.md">中文</a> 
+   <strong>English</strong> | <a href="./.github/README.cn.md">中文</a> | <a href="./.github/README.jp.md">日本語</a>
 </p>
 
 
@@ -67,7 +67,7 @@ The AI Gateway's enterprise version offers enterprise-ready capabilities for **o
 
 The enterprise deployment architecture, supported platforms is available here - [**Enterprise Private Cloud Deployments**](https://docs.portkey.ai/docs/product/enterprise-offering/private-cloud-deployments)
 
-<a href="https://app.portkey.ai/signup"><img src="https://portkey.ai/blog/content/images/2024/08/Get-API-Key--5-.png" height=50 alt="Book an enterprise AI gateway demo" /></a><br>
+<a href="https://portkey.sh/demo-22"><img src="https://portkey.ai/blog/content/images/2024/08/Get-API-Key--5-.png" height=50 alt="Book an enterprise AI gateway demo" /></a><br>
 
 <br>
 
@@ -268,7 +268,7 @@ Make your AI app more <ins>reliable</ins> and <ins>forward compatible</ins>, whi
 ✅&nbsp; SOC2, ISO, HIPAA, GDPR Compliances - for best security practices <br>
 ✅&nbsp; Professional Support - along with feature prioritization <br>
 
-[Schedule a call to discuss enterprise deployments](https://calendly.com/rohit-portkey/noam)
+[Schedule a call to discuss enterprise deployments](https://portkey.sh/demo-22)
 
 <br>
 
@@ -289,6 +289,7 @@ Join our growing community around the world, for help, ideas, and discussions on
 - Chat with us on [Discord](https://portkey.ai/community)
 - Follow us on [Twitter](https://twitter.com/PortkeyAI)
 - Connect with us on [LinkedIn](https://www.linkedin.com/company/portkey-ai/)
+- Read the documentation in [Japanese](./.github/README.jp.md)
 <!-- - Visit us on [YouTube](https://www.youtube.com/channel/UCZph50gLNXAh1DpmeX8sBdw) -->
 <!-- - Join our [Dev community](https://dev.to/portkeyai) -->
 <!-- - Questions tagged #portkey on [Stack Overflow](https://stackoverflow.com/questions/tagged/portkey) -->
