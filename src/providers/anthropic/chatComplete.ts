@@ -1,9 +1,10 @@
-import { ANTHROPIC } from '../../globals';
+import { ANTHROPIC, fileExtensionMimeTypeMap } from '../../globals';
 import {
   Params,
   Message,
   ContentType,
   AnthropicPromptCache,
+  SYSTEM_MESSAGE_ROLES,
 } from '../../types/requestBody';
 import {
   ChatCompletionResponse,
@@ -111,7 +112,7 @@ export const AnthropicChatCompleteConfig: ProviderConfig = {
         // Transform the chat messages into a simple prompt
         if (!!params.messages) {
           params.messages.forEach((msg: Message & AnthropicPromptCache) => {
-            if (msg.role === 'system') return;
+            if (SYSTEM_MESSAGE_ROLES.includes(msg.role)) return;
 
             if (msg.role === 'assistant') {
               messages.push(transformAssistantMessage(msg));
@@ -146,7 +147,10 @@ export const AnthropicChatCompleteConfig: ProviderConfig = {
                     if (mediaTypeParts.length === 2 && base64Image) {
                       const mediaType = mediaTypeParts[1];
                       transformedMessage.content.push({
-                        type: 'image',
+                        type:
+                          mediaType === fileExtensionMimeTypeMap.pdf
+                            ? 'document'
+                            : 'image',
                         source: {
                           type: 'base64',
                           media_type: mediaType,
@@ -185,7 +189,7 @@ export const AnthropicChatCompleteConfig: ProviderConfig = {
         if (!!params.messages) {
           params.messages.forEach((msg: Message & AnthropicPromptCache) => {
             if (
-              msg.role === 'system' &&
+              SYSTEM_MESSAGE_ROLES.includes(msg.role) &&
               msg.content &&
               typeof msg.content === 'object' &&
               msg.content[0].text
@@ -200,7 +204,7 @@ export const AnthropicChatCompleteConfig: ProviderConfig = {
                 });
               });
             } else if (
-              msg.role === 'system' &&
+              SYSTEM_MESSAGE_ROLES.includes(msg.role) &&
               typeof msg.content === 'string'
             ) {
               systemMessages.push({
@@ -360,6 +364,7 @@ export interface AnthropicChatCompleteStreamResponse {
       cache_read_input_tokens?: number;
     };
   };
+  error?: AnthropicErrorObject;
 }
 
 export const AnthropicErrorResponseTransform: (
@@ -443,7 +448,11 @@ export const AnthropicChatCompleteResponseTransform: (
       usage: {
         prompt_tokens: input_tokens,
         completion_tokens: output_tokens,
-        total_tokens: input_tokens + output_tokens,
+        total_tokens:
+          input_tokens +
+          output_tokens +
+          (cache_creation_input_tokens ?? 0) +
+          (cache_read_input_tokens ?? 0),
         ...(shouldSendCacheUsage && {
           cache_read_input_tokens: cache_read_input_tokens,
           cache_creation_input_tokens: cache_creation_input_tokens,
@@ -476,10 +485,34 @@ export const AnthropicChatCompleteStreamChunkTransform: (
   chunk = chunk.replace(/^event: content_block_start[\r\n]*/, '');
   chunk = chunk.replace(/^event: message_delta[\r\n]*/, '');
   chunk = chunk.replace(/^event: message_start[\r\n]*/, '');
+  chunk = chunk.replace(/^event: error[\r\n]*/, '');
   chunk = chunk.replace(/^data: /, '');
   chunk = chunk.trim();
 
   const parsedChunk: AnthropicChatCompleteStreamResponse = JSON.parse(chunk);
+
+  if (parsedChunk.type === 'error' && parsedChunk.error) {
+    return (
+      `data: ${JSON.stringify({
+        id: fallbackId,
+        object: 'chat.completion.chunk',
+        created: Math.floor(Date.now() / 1000),
+        model: '',
+        provider: ANTHROPIC,
+        choices: [
+          {
+            finish_reason: parsedChunk.error.type,
+            delta: {
+              content: '',
+            },
+          },
+        ],
+      })}` +
+      '\n\n' +
+      'data: [DONE]\n\n'
+    );
+  }
+
   if (
     parsedChunk.type === 'content_block_start' &&
     parsedChunk.content_block?.type === 'text'
@@ -524,6 +557,11 @@ export const AnthropicChatCompleteStreamChunkTransform: (
   }
 
   if (parsedChunk.type === 'message_delta' && parsedChunk.usage) {
+    const totalTokens =
+      (streamState?.usage?.prompt_tokens ?? 0) +
+      (streamState?.usage?.cache_creation_input_tokens ?? 0) +
+      (streamState?.usage?.cache_read_input_tokens ?? 0) +
+      (parsedChunk.usage.output_tokens ?? 0);
     return (
       `data: ${JSON.stringify({
         id: fallbackId,
@@ -541,6 +579,7 @@ export const AnthropicChatCompleteStreamChunkTransform: (
         usage: {
           completion_tokens: parsedChunk.usage?.output_tokens,
           ...streamState.usage,
+          total_tokens: totalTokens,
         },
       })}` + '\n\n'
     );

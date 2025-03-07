@@ -6,6 +6,7 @@ export const HEADER_KEYS: Record<string, string> = {
   MODE: `x-${POWERED_BY}-mode`,
   RETRIES: `x-${POWERED_BY}-retry-count`,
   PROVIDER: `x-${POWERED_BY}-provider`,
+  CONFIG: `x-${POWERED_BY}-config`,
   TRACE_ID: `x-${POWERED_BY}-trace-id`,
   CACHE: `x-${POWERED_BY}-cache`,
   METADATA: `x-${POWERED_BY}-metadata`,
@@ -74,6 +75,12 @@ export const LEMONFOX_AI: string = 'lemonfox-ai';
 export const UPSTAGE: string = 'upstage';
 export const LAMBDA: string = 'lambda';
 export const DASHSCOPE: string = 'dashscope';
+export const X_AI: string = 'x-ai';
+export const SAGEMAKER: string = 'sagemaker';
+export const NEBIUS: string = 'nebius';
+export const RECRAFTAI: string = 'recraft-ai';
+export const MILVUS: string = 'milvus';
+export const REPLICATE: string = 'replicate';
 
 export const VALID_PROVIDERS = [
   ANTHROPIC,
@@ -121,6 +128,13 @@ export const VALID_PROVIDERS = [
   UPSTAGE,
   LAMBDA,
   DASHSCOPE,
+  X_AI,
+  SAGEMAKER,
+  NEBIUS,
+  RECRAFTAI,
+  MILVUS,
+  REPLICATE,
+  POWERED_BY,
 ];
 
 export const CONTENT_TYPES = {
@@ -129,6 +143,7 @@ export const CONTENT_TYPES = {
   EVENT_STREAM: 'text/event-stream',
   AUDIO_MPEG: 'audio/mpeg',
   APPLICATION_OCTET_STREAM: 'application/octet-stream',
+  BINARY_OCTET_STREAM: 'binary/octet-stream',
   GENERIC_AUDIO_PATTERN: 'audio',
   PLAIN_TEXT: 'text/plain',
   HTML: 'text/html',
@@ -138,6 +153,7 @@ export const CONTENT_TYPES = {
 export const MULTIPART_FORM_DATA_ENDPOINTS: endpointStrings[] = [
   'createTranscription',
   'createTranslation',
+  'uploadFile',
 ];
 
 export const fileExtensionMimeTypeMap = {
@@ -166,6 +182,7 @@ export const fileExtensionMimeTypeMap = {
   wmv: 'video/wmv',
   mpegps: 'video/mpegps',
   flv: 'video/flv',
+  webm: 'video/webm',
 };
 
 export const imagesMimeTypes = [

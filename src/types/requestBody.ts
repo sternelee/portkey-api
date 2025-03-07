@@ -59,12 +59,13 @@ export interface Options {
   deploymentId?: string;
   apiVersion?: string;
   adAuth?: string;
-  azureModelName?: string;
-  azureAuthMode?: string; // can be entra or managed
+  azureAuthMode?: string;
   azureManagedClientId?: string;
   azureEntraClientId?: string;
   azureEntraClientSecret?: string;
   azureEntraTenantId?: string;
+  azureAdToken?: string;
+  azureModelName?: string;
   /** Workers AI specific */
   workersAiAccountId?: string;
   /** The parameter to set custom base url */
@@ -78,7 +79,7 @@ export interface Options {
   requestTimeout?: number;
   /** This is used to determine if the request should be transformed to formData Example: Stability V2 */
   transformToFormData?: boolean;
-  /** AWS Bedrock specific */
+  /** AWS specific (used for Bedrock and Sagemaker) */
   awsSecretAccessKey?: string;
   awsAccessKeyId?: string;
   awsSessionToken?: string;
@@ -86,6 +87,20 @@ export interface Options {
   awsAuthType?: string;
   awsRoleArn?: string;
   awsExternalId?: string;
+  awsS3Bucket?: string;
+  awsS3ObjectKey?: string;
+  awsBedrockModel?: string;
+
+  /** Sagemaker specific */
+  amznSagemakerCustomAttributes?: string;
+  amznSagemakerTargetModel?: string;
+  amznSagemakerTargetVariant?: string;
+  amznSagemakerTargetContainerHostname?: string;
+  amznSagemakerInferenceId?: string;
+  amznSagemakerEnableExplanations?: string;
+  amznSagemakerInferenceComponent?: string;
+  amznSagemakerSessionId?: string;
+  amznSagemakerModelName?: string;
 
   /** Stability AI specific */
   stabilityClientId?: string;
@@ -99,12 +114,18 @@ export interface Options {
   vertexRegion?: string;
   vertexProjectId?: string;
   vertexServiceAccountJson?: Record<string, any>;
+  vertexStorageBucketName?: string;
+  vertexModelName?: string;
+
+  // Required for file uploads with google.
+  filename?: string;
 
   afterRequestHooks?: HookObject[];
   beforeRequestHooks?: HookObject[];
   /** OpenAI specific */
   openaiProject?: string;
   openaiOrganization?: string;
+  openaiBeta?: string;
 
   /** Azure Inference Specific */
   azureRegion?: string;
@@ -112,6 +133,7 @@ export interface Options {
   azureDeploymentType?: 'managed' | 'serverless';
   azureEndpointName?: string;
   azureApiVersion?: string;
+  azureExtraParams?: string;
 
   /** The parameter to determine if extra non-openai compliant fields should be returned in response */
   strictOpenAiCompliance?: boolean;
@@ -120,6 +142,9 @@ export interface Options {
   /** Anthropic specific headers */
   anthropicBeta?: string;
   anthropicVersion?: string;
+
+  /** Fireworks finetune required fields */
+  fireworksAccountId?: string;
 }
 
 /**
@@ -158,6 +183,7 @@ export interface Targets {
   index?: number;
   cache?: CacheSettings | string;
   targets?: Targets[];
+
   /** This is used to determine if the request should be transformed to formData Example: Stability V2 */
   transformToFormData?: boolean;
 }
@@ -206,14 +232,18 @@ export enum MESSAGE_ROLES {
   ASSISTANT = 'assistant',
   FUNCTION = 'function',
   TOOL = 'tool',
+  DEVELOPER = 'developer',
 }
+
+export const SYSTEM_MESSAGE_ROLES = ['system', 'developer'];
 
 export type OpenAIMessageRole =
   | 'system'
   | 'user'
   | 'assistant'
   | 'function'
-  | 'tool';
+  | 'tool'
+  | 'developer';
 
 /**
  * A message in the conversation.
@@ -268,6 +298,8 @@ export interface Function {
   description?: string;
   /** The parameters for the function. */
   parameters?: JsonSchema;
+  /** Whether to enable strict schema adherence when generating the function call. If set to true, the model will follow the exact schema defined in the parameters field. Only a subset of JSON Schema is supported when strict is true */
+  strict?: boolean;
 }
 
 export interface ToolChoiceObject {
@@ -290,7 +322,7 @@ export interface Tool extends AnthropicPromptCache {
   /** The name of the function. */
   type: string;
   /** A description of the function. */
-  function?: Function;
+  function: Function;
 }
 
 /**
@@ -383,7 +415,6 @@ export interface ShortConfig {
   retry?: RetrySettings;
   resourceName?: string;
   deploymentId?: string;
-  azureModelName?: string;
   workersAiAccountId?: string;
   apiVersion?: string;
   azureAuthMode?: string;
@@ -391,6 +422,7 @@ export interface ShortConfig {
   azureEntraClientId?: string;
   azureEntraClientSecret?: string;
   azureEntraTenantId?: string;
+  azureModelName?: string;
   customHost?: string;
   // Google Vertex AI specific
   vertexRegion?: string;

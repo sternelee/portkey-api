@@ -1,11 +1,12 @@
 import { OPEN_AI } from '../../globals';
 import { EmbedResponse } from '../../types/embedRequestBody';
+import { Params, Message } from '../../types/requestBody';
 import { OpenAIChatCompleteResponse } from '../openai/chatComplete';
 import { OpenAICompleteResponse } from '../openai/complete';
 import { OpenAIErrorResponseTransform } from '../openai/utils';
 import { ErrorResponse, ProviderConfig } from '../types';
 
-type CustomTransformer<T extends any, U> = (
+type CustomTransformer<T, U> = (
   response: T | ErrorResponse,
   isError?: boolean
 ) => U;
@@ -17,9 +18,10 @@ type DefaultValues = {
   top_p?: number;
   stream?: boolean;
   logprobs?: boolean;
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const excludeObjectKeys = (keyList: string[], object: Record<string, any>) => {
   if (keyList) {
     keyList.forEach((excludeKey) => {
@@ -51,6 +53,13 @@ export const chatCompleteParams = (
     messages: {
       param: 'messages',
       default: '',
+      transform: (params: Params) => {
+        return params.messages?.map((message: Message) => {
+          if (message.role === 'developer')
+            return { ...message, role: 'system' };
+          return message;
+        });
+      },
     },
     functions: {
       param: 'functions',
@@ -249,6 +258,7 @@ export const embedParams = (
 
 const EmbedResponseTransformer = <T extends EmbedResponse | ErrorResponse>(
   provider: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   customTransformer?: CustomTransformer<EmbedResponse, T>
 ) => {
   const transformer: (
@@ -362,7 +372,10 @@ export const responseTransformers = <
       | CustomTransformer<OpenAIChatCompleteResponse | ErrorResponse, V>;
   }
 ) => {
-  const transformers: Record<string, Function | null> = {
+  const transformers: Record<
+    'complete' | 'chatComplete' | 'embed',
+    Function | null
+  > = {
     complete: null,
     chatComplete: null,
     embed: null,
@@ -392,4 +405,16 @@ export const responseTransformers = <
   }
 
   return transformers;
+};
+
+export const OpenAIResponseTransform = (
+  response: Response | ErrorResponse,
+  responseStatus: number,
+  provider: string
+): Response | ErrorResponse => {
+  if (responseStatus !== 200 && 'error' in response) {
+    return OpenAIErrorResponseTransform(response, provider ?? OPEN_AI);
+  }
+
+  return response;
 };

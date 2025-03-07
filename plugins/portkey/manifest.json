@@ -67,6 +67,17 @@
                 "violence/graphic"
               ]
             }
+          },
+          "not": {
+            "type": "boolean",
+            "label": "Invert Result",
+            "description": [
+              {
+                "type": "subHeading",
+                "text": "If true, the verdict will be inverted"
+              }
+            ],
+            "default": false
           }
         },
         "required": ["categories"]
@@ -199,6 +210,17 @@
               "Persian",
               "Vietnamese"
             ]
+          },
+          "not": {
+            "type": "boolean",
+            "label": "Invert Result",
+            "description": [
+              {
+                "type": "subHeading",
+                "text": "If true, the verdict will be inverted"
+              }
+            ],
+            "default": false
           }
         }
       }
@@ -217,6 +239,17 @@
       "parameters": {
         "type": "object",
         "properties": {
+          "redact": {
+            "type": "boolean",
+            "label": "Redact PII",
+            "description": [
+              {
+                "type": "subHeading",
+                "text": "If true, the PII identified will be redacted"
+              }
+            ],
+            "default": false
+          },
           "categories": {
             "type": "array",
             "label": "PII Categories",
@@ -247,6 +280,17 @@
                 "SSN"
               ]
             }
+          },
+          "not": {
+            "type": "boolean",
+            "label": "Invert Result",
+            "description": [
+              {
+                "type": "subHeading",
+                "text": "If true, the verdict will be inverted"
+              }
+            ],
+            "default": false
           }
         },
         "required": ["categories"]
@@ -265,7 +309,19 @@
       ],
       "parameters": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "not": {
+            "type": "boolean",
+            "label": "Invert Result",
+            "description": [
+              {
+                "type": "subHeading",
+                "text": "If true, the verdict will be inverted"
+              }
+            ],
+            "default": false
+          }
+        }
       }
     }
   ]

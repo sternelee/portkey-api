@@ -15,7 +15,7 @@ export const handler: PluginHandler = async (
   let verdict = false;
   let data = null;
 
-  const evaluator = 'retrieval-answer-relevance';
+  const evaluator = 'answer-relevance';
 
   if (eventType !== 'afterRequestHook') {
     return {
@@ -30,14 +30,14 @@ export const handler: PluginHandler = async (
   const evaluationBody: any = {
     input: context.request.text,
     output: context.response.text,
-    timeout: 15000,
   };
 
   try {
     const result: any = await postPatronus(
       evaluator,
       parameters.credentials,
-      evaluationBody
+      evaluationBody,
+      parameters.timeout || 15000
     );
 
     const evalResult = result.results[0];

@@ -3,7 +3,8 @@ import retry from 'async-retry';
 async function fetchWithTimeout(
   url: string,
   options: RequestInit,
-  timeout: number
+  timeout: number,
+  requestHandler?: () => Promise<Response>
 ) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -15,7 +16,11 @@ async function fetchWithTimeout(
   let response;
 
   try {
-    response = await fetch(url, timeoutRequestOptions);
+    if (requestHandler) {
+      response = await requestHandler();
+    } else {
+      response = await fetch(url, timeoutRequestOptions);
+    }
     clearTimeout(timeoutId);
   } catch (err: any) {
     if (err.name === 'AbortError') {
@@ -61,29 +66,40 @@ export const retryRequest = async (
   options: RequestInit,
   retryCount: number,
   statusCodesToRetry: number[],
-  timeout: number | null
-): Promise<[Response, number | undefined]> => {
-  let lastError: any | undefined;
+  timeout: number | null,
+  requestHandler?: () => Promise<Response>
+): Promise<{
+  response: Response;
+  attempt: number | undefined;
+  createdAt: Date;
+}> => {
   let lastResponse: Response | undefined;
   let lastAttempt: number | undefined;
+  const start = new Date();
   try {
     await retry(
       async (bail: any, attempt: number) => {
         try {
-          const response: Response = timeout
-            ? await fetchWithTimeout(url, options, timeout)
-            : await fetch(url, options);
+          let response: Response;
+          if (timeout) {
+            response = await fetchWithTimeout(
+              url,
+              options,
+              timeout,
+              requestHandler
+            );
+          } else if (requestHandler) {
+            response = await requestHandler();
+          } else {
+            response = await fetch(url, options);
+          }
           if (statusCodesToRetry.includes(response.status)) {
             const errorObj: any = new Error(await response.text());
             errorObj.status = response.status;
             errorObj.headers = Object.fromEntries(response.headers);
             throw errorObj;
           } else if (response.status >= 200 && response.status <= 204) {
-            // console.log(
-            //   `Returned in Retry Attempt ${attempt}. Status:`,
-            //   response.ok,
-            //   response.status
-            // );
+            // do nothing
           } else {
             // All error codes that aren't retried need to be propogated up
             const errorObj: any = new Error(await response.clone().text());
@@ -94,7 +110,6 @@ export const retryRequest = async (
           }
           lastResponse = response;
         } catch (error: any) {
-          lastError = error;
           if (attempt >= retryCount + 1) {
             bail(error);
             return;
@@ -125,9 +140,12 @@ export const retryRequest = async (
       });
     } else if (error instanceof TypeError) {
       // Handle other fetch-level errors
-      lastResponse = new Response(error.message, {
-        status: 500,
-      });
+      lastResponse = new Response(
+        `Message: ${error.message} Cause: ${error.cause} Name: ${error.name}`,
+        {
+          status: 500,
+        }
+      );
     } else {
       lastResponse = new Response(error.message, {
         status: error.status,
@@ -138,5 +156,9 @@ export const retryRequest = async (
       `Tried ${lastAttempt ?? 1} time(s) but failed. Error: ${JSON.stringify(error)}`
     );
   }
-  return [lastResponse as Response, lastAttempt];
+  return {
+    response: lastResponse as Response,
+    attempt: lastAttempt,
+    createdAt: start,
+  };
 };

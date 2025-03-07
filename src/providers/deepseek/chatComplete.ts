@@ -1,4 +1,5 @@
 import { DEEPSEEK } from '../../globals';
+import { Params } from '../../types/requestBody';
 
 import {
   ChatCompletionResponse,
@@ -19,6 +20,12 @@ export const DeepSeekChatCompleteConfig: ProviderConfig = {
   messages: {
     param: 'messages',
     default: '',
+    transform: (params: Params) => {
+      return params.messages?.map((message) => {
+        if (message.role === 'developer') return { ...message, role: 'system' };
+        return message;
+      });
+    },
   },
   max_tokens: {
     param: 'max_tokens',
@@ -99,6 +106,11 @@ interface DeepSeekStreamChunk {
   object: string;
   created: number;
   model: string;
+  usage?: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+  };
   choices: {
     delta: {
       role?: string | null;
@@ -175,6 +187,7 @@ export const DeepSeekChatCompleteStreamChunkTransform: (
           finish_reason: parsedChunk.choices[0].finish_reason,
         },
       ],
+      usage: parsedChunk.usage,
     })}` + '\n\n'
   );
 };

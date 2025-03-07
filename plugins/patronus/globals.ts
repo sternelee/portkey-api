@@ -6,7 +6,8 @@ export const postPatronus = async (
   evaluator: string,
   credentials: any,
   data: any,
-  profile: string | null = null
+  timeout?: number,
+  criteria: string | null = null
 ) => {
   const options = {
     headers: {
@@ -19,7 +20,7 @@ export const postPatronus = async (
       {
         evaluator: evaluator,
         explain_strategy: 'always',
-        ...(profile && { profile_name: profile }),
+        ...(criteria && { criteria: criteria }),
       },
     ],
     evaluated_model_input: data.input,
@@ -27,7 +28,38 @@ export const postPatronus = async (
     // "evaluated_model_retrieved_context": ["I am John."]
   };
 
-  const timeout = data.timeout || 5000;
-
   return post(BASE_URL, body, options, timeout);
 };
+
+interface Position {
+  positions: [number, number][];
+  extra: any;
+  confidence_interval: any;
+}
+
+// For finding all longest positions of equal length
+interface AllLongestPositionsResult {
+  positions: [number, number][];
+  length: number;
+}
+
+export function findAllLongestPositions(
+  data: Position
+): AllLongestPositionsResult | null {
+  if (!data?.positions?.length) {
+    return null;
+  }
+
+  // Calculate max length
+  const maxLength = Math.max(...data.positions.map((pos) => pos[1] - pos[0]));
+
+  // Find all positions with max length
+  const longestPositions = data.positions.filter(
+    (pos) => pos[1] - pos[0] === maxLength
+  );
+
+  return {
+    positions: longestPositions,
+    length: maxLength,
+  };
+}
